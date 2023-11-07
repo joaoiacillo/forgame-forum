@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgame Forum Prototype</title>
+</head>
+<body>
+    <h1><a href="/">Forgame Forums</a></h1>
+    <p>Current user: <span id="current-user"></span></p>
+    
+    <h2 id="forum-name"></h2>
+
+    <h2>Create Topic</h2>
+    <form id="add-topic-form">
+        <div>
+            <label>
+                Title: 
+                <input type="text" placeholder="Topic Title" id="topic-title" size="60"/>
+            </label>
+        </div>
+        <div>
+            <div>
+                <label>Content:</label>
+            </div>
+            <textarea id="reply-content" cols="70" rows="10"></textarea>
+        </div>
+        <br>
+        <input type="submit" value="Create topic" />
+    </form>
+
+    <script src="db.js"></script>
+    <script src="render.js"></script>
+    <script>
+        const urlParams = new URL(window.location.href).searchParams;
+        const topicTitle = urlParams.get("topic-title");
+        const forumUuid = urlParams.get("forum-uuid");
+        const forumData = getForum(forumUuid);
+
+        document.querySelector("#forum-name").innerHTML = createForumName(forumData);
+        document.querySelector("#topic-title").value = topicTitle;
+
+        const addForm = document.querySelector("#add-topic-form");
+        addForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const title = document.querySelector("#topic-title").value;
+            const content = document.querySelector("#reply-content").value;
+            
+            const topic = addTopicToForum(title, CURRENT_USER_UUID, forumUuid);
+            const reply = addReplyToTopic(content, CURRENT_USER_UUID, topic.uuid);
+            window.location.href = `/topic.html?uuid=${topic.uuid}`;
+        });
+    </script>
+</body>
+</html>

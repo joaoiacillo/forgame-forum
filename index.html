@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgame Forum Prototype</title>
+</head>
+<body>
+    <h1><a href="/">Forgame Forums</a></h1>
+    <p>Current user: <span id="current-user"></span></p>
+
+    <h2>Forums</h2>
+
+    <ul id="forums"></ul>
+    <script src="db.js"></script>
+    <script src="render.js"></script>
+    <script>
+        const forumsData = getForums();
+        const forumsElement = document.querySelector("#forums");
+
+        forumsData.forEach(forum => {
+            const li = createForumLi(forum);
+            forumsElement.append(li);
+        });
+    </script>
+</body>
+</html>

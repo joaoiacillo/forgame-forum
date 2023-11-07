@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgame Forum Prototype</title>
+    <style>
+        #replies li {
+            margin: 15px 0;
+            padding: 15px;
+            border: solid 2px rgba(0, 0, 0, .3);
+        }
+
+        #replies hr {
+            color: rgba(0, 0, 0, .3);
+        }
+    </style>
+</head>
+<body>
+    <h1><a href="/">Forgame Forums</a></h1>
+    <p>Current user: <span id="current-user"></span></p>
+    
+    <a id="back-link" href="#">&lt; Back to <span id="forum-name"></span></a>
+
+
+    <h3>Information</h3>
+    <div>
+        <p>Posted by <span id="author"></span></p>
+        <p>Posted on <time id="date"></time></p>
+    </div>
+
+    <h3>Replies</h3>
+    <ol id="replies"></ol>
+
+    <hr>
+
+    <h3>Add your Reply</h3>
+    <form id="add-reply-form">
+        <div>
+            <div>
+                <label>Content:</label>
+            </div>
+            <textarea id="reply-content" cols="70" rows="10"></textarea>
+        </div>
+        <br>
+        <input type="submit" value="Reply" />
+    </form>
+
+    <script src="db.js"></script>
+    <script src="render.js"></script>
+    <script>
+        const uuid = new URL(window.location.href).searchParams.get("uuid");
+        const topicData = getTopic(uuid);
+        const forumData = topicData.forum;
+
+        document.querySelector("#back-link").href = `/forum.html?uuid=${forumData.uuid}`
+        document.querySelector("#forum-name").innerHTML = forumData.name;
+
+        document.querySelector("#author").innerHTML = topicData.author.username;
+        document.querySelector("#date").innerHTML = topicData.postDate.toLocaleString();
+
+        const repliesElement = document.querySelector("#replies");
+
+        getRepliesFromTopic(uuid).forEach(r => {
+            repliesElement.append(createReply(r));
+        });
+
+        document.querySelector("#add-reply-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            const content = document.querySelector("#reply-content").value;
+            const reply = addReplyToTopic(content, CURRENT_USER_UUID, uuid);
+            repliesElement.append(createReply(reply));
+            event.target.reset();
+        });
+    </script>
+</body>
+</html>

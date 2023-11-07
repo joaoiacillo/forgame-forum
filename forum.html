@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgame Forum Prototype</title>
+    <style>
+        #topics li {
+            margin-bottom: 15px;
+        }
+
+        #topics li a {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #topics li span {
+            color: #2c2c2c;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <h1><a href="/">Forgame Forums</a></h1>
+    <p>Current user: <span id="current-user"></span></p>
+    
+    <h2 id="forum-name"></h2>
+
+    <h3 id="subforums-title"></h3>
+    <ul id="subforums"></ul>
+
+    <h3>Topics</h3>
+    <form id="add-topic-form">
+        <input type="text" placeholder="Topic Title" id="topic-title" size="60"/>
+        <input type="submit" value="Create topic" />
+    </form>
+    <ul id="topics"></ul>
+
+    <script src="db.js"></script>
+    <script src="render.js"></script>
+    <script>
+        const uuid = new URL(window.location.href).searchParams.get("uuid");
+        const forumData = getForum(uuid);
+
+        document.querySelector("#forum-name").innerHTML = createForumName(forumData);
+
+        const subForumsData = getForums(uuid);
+        const subForumsElement = document.querySelector("#subforums");
+
+        if (subForumsData.length > 0) {
+            document.querySelector("#subforums-title").textContent = "Subforums";
+
+            subForumsData.forEach(forum => {
+                const li = createForumLi(forum);
+                subForumsElement.append(li);
+            });
+        }
+
+        const addForm = document.querySelector("#add-topic-form");
+        addForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const title = document.querySelector("#topic-title").value;
+            window.location.href = `/create-topic.html?topic-title=${title}&forum-uuid=${uuid}`;
+        });
+
+        const topicsData = getTopicsFromForum(uuid);
+        const topicsElement = document.querySelector("#topics");
+
+        topicsData.reverse().forEach(topic => {
+            const li = createTopicLi(topic);
+            topicsElement.append(li);
+        });
+    </script>
+</body>
+</html>
